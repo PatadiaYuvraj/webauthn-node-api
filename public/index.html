@@ -1,0 +1,1720 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mini User API</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            width: min(1000px, 92%);
+            margin: 40px auto;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow:
+                0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            border: 0;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        pre {
+            background: #111827;
+            color: #e5e7eb;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .message.success-message {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .message.error-message {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f3f4f6;
+        }
+
+        .status {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <h1>Mini User API</h1>
+
+
+        <!-- =========================================================
+         MESSAGE
+    ========================================================== -->
+
+        <div id="message" class="message"></div>
+
+
+        <!-- =========================================================
+         AUTHENTICATION
+    ========================================================== -->
+
+        <div id="authSection" class="card">
+
+            <h2>Login</h2>
+
+
+            <div class="form-group">
+
+                <label for="loginEmail">
+                    Email
+                </label>
+
+                <input type="email" id="loginEmail" placeholder="Enter email">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="loginPassword">
+                    Password
+                </label>
+
+                <input type="password" id="loginPassword" placeholder="Enter password">
+
+            </div>
+
+
+            <button id="loginButton" class="primary">
+                Login
+            </button>
+
+
+            <button id="passkeyLoginButton" class="success">
+                Login with Passkey
+            </button>
+
+
+            <hr>
+
+
+            <h2>Register</h2>
+
+
+            <div class="form-group">
+
+                <label for="registerName">
+                    Name
+                </label>
+
+                <input type="text" id="registerName" placeholder="Enter name">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="registerEmail">
+                    Email
+                </label>
+
+                <input type="email" id="registerEmail" placeholder="Enter email">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="registerPassword">
+                    Password
+                </label>
+
+                <input type="password" id="registerPassword" placeholder="Enter password">
+
+            </div>
+
+
+            <button id="registerButton" class="primary">
+                Register
+            </button>
+
+        </div>
+
+
+        <!-- =========================================================
+         USER SECTION
+    ========================================================== -->
+
+        <div id="userSection" class="card hidden">
+
+            <h2>Account</h2>
+
+
+            <div id="loginStatus" class="status"></div>
+
+
+            <button id="registerPasskeyButton" class="success">
+                Register Passkey
+            </button>
+
+
+            <button id="getPasskeysButton" class="secondary">
+                My Passkeys
+            </button>
+
+
+            <button id="logoutButton" class="danger">
+                Logout
+            </button>
+
+
+            <h3>User Information</h3>
+
+            <div id="userOutput"></div>
+
+
+            <h3>Passkeys</h3>
+
+            <div id="passkeyList"></div>
+
+        </div>
+
+
+        <!-- =========================================================
+         PRODUCTS
+    ========================================================== -->
+
+        <div id="productSection" class="card hidden">
+
+            <h2>Products</h2>
+
+
+            <div class="form-group">
+
+                <label for="productName">
+                    Product Name
+                </label>
+
+                <input type="text" id="productName" placeholder="Product name">
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="productPrice">
+                    Price
+                </label>
+
+                <input type="number" id="productPrice" placeholder="Price" min="0" step="0.01">
+
+            </div>
+
+
+            <button id="createProductButton" class="primary">
+                Add Product
+            </button>
+
+
+            <button id="loadProductsButton" class="secondary">
+                Refresh Products
+            </button>
+
+
+            <div id="productsOutput"></div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =============================================================
+     SIMPLEWEBAUTHN BROWSER
+============================================================== -->
+
+    <script type="module">
+
+        import {
+            startRegistration,
+            startAuthentication
+        } from "https://cdn.jsdelivr.net/npm/@simplewebauthn/browser@13/+esm";
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Helpers
+        |--------------------------------------------------------------------------
+        */
+
+        const API = "";
+
+
+        function getToken() {
+
+            return localStorage.getItem(
+                "token"
+            );
+
+        }
+
+
+        function showMessage(
+            message,
+            type = "success"
+        ) {
+
+            const element =
+                document.getElementById(
+                    "message"
+                );
+
+
+            element.textContent =
+                message;
+
+
+            element.className =
+                "message " +
+                (
+                    type === "success"
+                        ? "success-message"
+                        : "error-message"
+                );
+
+
+            element.style.display =
+                "block";
+
+
+            setTimeout(
+                () => {
+
+                    element.style.display =
+                        "none";
+
+                },
+                5000
+            );
+
+        }
+
+
+        async function apiRequest(
+            url,
+            options = {}
+        ) {
+
+            const headers = {
+                ...(options.headers || {})
+            };
+
+
+            const token =
+                getToken();
+
+
+            if (token) {
+
+                headers.Authorization =
+                    `Bearer ${token}`;
+
+            }
+
+
+            if (
+                options.body &&
+                !headers["Content-Type"]
+            ) {
+
+                headers["Content-Type"] =
+                    "application/json";
+
+            }
+
+
+            const response =
+                await fetch(
+                    API + url,
+                    {
+                        ...options,
+                        headers
+                    }
+                );
+
+
+            const data =
+                await response.json()
+                    .catch(
+                        () => ({})
+                    );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "Request failed"
+                );
+
+            }
+
+
+            return data;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Show / Hide Sections
+        |--------------------------------------------------------------------------
+        */
+
+        function showLoggedInUI() {
+
+            document
+                .getElementById(
+                    "authSection"
+                )
+                .classList
+                .add("hidden");
+
+
+            document
+                .getElementById(
+                    "userSection"
+                )
+                .classList
+                .remove("hidden");
+
+
+            document
+                .getElementById(
+                    "productSection"
+                )
+                .classList
+                .remove("hidden");
+
+        }
+
+
+        function showLoggedOutUI() {
+
+            document
+                .getElementById(
+                    "authSection"
+                )
+                .classList
+                .remove("hidden");
+
+
+            document
+                .getElementById(
+                    "userSection"
+                )
+                .classList
+                .add("hidden");
+
+
+            document
+                .getElementById(
+                    "productSection"
+                )
+                .classList
+                .add("hidden");
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Login With Password
+        |--------------------------------------------------------------------------
+        */
+
+        document
+            .getElementById(
+                "loginButton"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    try {
+
+                        const email =
+                            document
+                                .getElementById(
+                                    "loginEmail"
+                                )
+                                .value
+                                .trim();
+
+
+                        const password =
+                            document
+                                .getElementById(
+                                    "loginPassword"
+                                )
+                                .value;
+
+
+                        if (
+                            !email ||
+                            !password
+                        ) {
+
+                            showMessage(
+                                "Email and password are required",
+                                "error"
+                            );
+
+                            return;
+
+                        }
+
+
+                        const result =
+                            await apiRequest(
+                                "/api/login",
+                                {
+
+                                    method:
+                                        "POST",
+
+                                    body:
+                                        JSON.stringify({
+
+                                            email,
+
+                                            password
+
+                                        })
+
+                                }
+                            );
+
+
+                        localStorage.setItem(
+                            "token",
+                            result.token
+                        );
+
+
+                        showMessage(
+                            "Login successful"
+                        );
+
+
+                        await loadCurrentUser();
+
+                        await loadProducts();
+
+                    } catch (error) {
+
+                        showMessage(
+                            error.message,
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Register
+        |--------------------------------------------------------------------------
+        */
+
+        document
+            .getElementById(
+                "registerButton"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    try {
+
+                        const name =
+                            document
+                                .getElementById(
+                                    "registerName"
+                                )
+                                .value
+                                .trim();
+
+
+                        const email =
+                            document
+                                .getElementById(
+                                    "registerEmail"
+                                )
+                                .value
+                                .trim();
+
+
+                        const password =
+                            document
+                                .getElementById(
+                                    "registerPassword"
+                                )
+                                .value;
+
+
+                        const result =
+                            await apiRequest(
+                                "/api/register",
+                                {
+
+                                    method:
+                                        "POST",
+
+                                    body:
+                                        JSON.stringify({
+
+                                            name,
+
+                                            email,
+
+                                            password
+
+                                        })
+
+                                }
+                            );
+
+
+                        showMessage(
+                            result.message
+                        );
+
+
+                        document
+                            .getElementById(
+                                "loginEmail"
+                            )
+                            .value =
+                            email;
+
+
+                        document
+                            .getElementById(
+                                "loginPassword"
+                            )
+                            .value =
+                            "";
+
+                    } catch (error) {
+
+                        showMessage(
+                            error.message,
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Register Passkey
+        |--------------------------------------------------------------------------
+        |
+        | User must already be logged in.
+        |
+        */
+
+        document
+            .getElementById(
+                "registerPasskeyButton"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    try {
+
+                        if (!getToken()) {
+
+                            showMessage(
+                                "You must login first",
+                                "error"
+                            );
+
+                            return;
+
+                        }
+
+
+                        /*
+                        | Get registration options
+                        */
+
+                        const optionsResult =
+                            await apiRequest(
+                                "/api/passkey/register/options",
+                                {
+                                    method:
+                                        "POST"
+                                }
+                            );
+
+
+                        /*
+                        | Ask browser / OS to create
+                        | the passkey.
+                        */
+
+                        const registrationResponse =
+                            await startRegistration({
+
+                                optionsJSON:
+                                    optionsResult.options
+
+                            });
+
+
+                        /*
+                        | Verify registration on server.
+                        */
+
+                        const verificationResult =
+                            await apiRequest(
+                                "/api/passkey/register/verify",
+                                {
+
+                                    method:
+                                        "POST",
+
+                                    body:
+                                        JSON.stringify({
+
+                                            challengeId:
+                                                optionsResult.challengeId,
+
+                                            response:
+                                                registrationResponse
+
+                                        })
+
+                                }
+                            );
+
+
+                        if (
+                            verificationResult.success
+                        ) {
+
+                            showMessage(
+                                "Passkey registered successfully"
+                            );
+
+
+                            await loadPasskeys();
+
+                        }
+
+                    } catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+
+                        /*
+                        | User cancelling the browser
+                        | passkey dialog is not a server error.
+                        */
+
+                        showMessage(
+                            error.message ||
+                            "Passkey registration failed",
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Login With Passkey
+        |--------------------------------------------------------------------------
+        */
+
+        document
+            .getElementById(
+                "passkeyLoginButton"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    try {
+
+                        /*
+                        | Get authentication options.
+                        */
+
+                        const optionsResult =
+                            await fetch(
+                                "/api/passkey/login/options",
+                                {
+                                    method:
+                                        "POST",
+
+                                    headers: {
+                                        "Content-Type":
+                                            "application/json"
+                                    }
+                                }
+                            );
+
+
+                        const optionsData =
+                            await optionsResult.json();
+
+
+                        if (
+                            !optionsResult.ok
+                        ) {
+
+                            throw new Error(
+                                optionsData.message ||
+                                "Failed to create authentication options"
+                            );
+
+                        }
+
+
+                        /*
+                        | Ask browser / OS to authenticate
+                        | using the user's passkey.
+                        */
+
+                        const authenticationResponse =
+                            await startAuthentication({
+
+                                optionsJSON:
+                                    optionsData.options
+
+                            });
+
+
+                        /*
+                        | Send the signed WebAuthn response
+                        | back to the server.
+                        */
+
+                        const verificationResponse =
+                            await fetch(
+                                "/api/passkey/login/verify",
+                                {
+
+                                    method:
+                                        "POST",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "application/json"
+
+                                    },
+
+                                    body:
+                                        JSON.stringify({
+
+                                            challengeId:
+                                                optionsData.challengeId,
+
+                                            response:
+                                                authenticationResponse
+
+                                        })
+
+                                }
+                            );
+
+
+                        const result =
+                            await verificationResponse.json();
+
+
+                        if (
+                            !verificationResponse.ok
+                        ) {
+
+                            throw new Error(
+                                result.message ||
+                                "Passkey login failed"
+                            );
+
+                        }
+
+
+                        /*
+                        | IMPORTANT:
+                        |
+                        | Passkey authentication gives us
+                        | the same JWT used by password login.
+                        */
+
+                        localStorage.setItem(
+                            "token",
+                            result.token
+                        );
+
+
+                        showMessage(
+                            "Passkey login successful"
+                        );
+
+
+                        await loadCurrentUser();
+
+                        await loadProducts();
+
+                    } catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+
+                        showMessage(
+                            error.message ||
+                            "Passkey login failed",
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Current User
+        |--------------------------------------------------------------------------
+        */
+
+        async function loadCurrentUser() {
+
+            try {
+
+                const result =
+                    await apiRequest(
+                        "/api/me"
+                    );
+
+
+                showLoggedInUI();
+
+
+                const user =
+                    result.user;
+
+
+                document
+                    .getElementById(
+                        "loginStatus"
+                    )
+                    .textContent =
+                    `Logged in as ${user.email}`;
+
+
+                const userOutput =
+                    document.getElementById("userOutput");
+
+                if (userOutput) {
+
+                    userOutput.innerHTML = `
+
+        <div class="user-info">
+
+            <p>
+                <strong>ID:</strong>
+                ${escapeHtml(user.id)}
+            </p>
+
+            <p>
+                <strong>Name:</strong>
+                ${escapeHtml(user.name)}
+            </p>
+
+            <p>
+                <strong>Email:</strong>
+                ${escapeHtml(user.email)}
+            </p>
+
+            <p>
+                <strong>Tunnel ID:</strong>
+                ${escapeHtml(user.tunnelId)}
+            </p>
+
+            <p>
+                <strong>Super Admin:</strong>
+                ${user.isSuperAdmin ? "Yes" : "No"}
+            </p>
+
+            <p>
+                <strong>Created At:</strong>
+                ${formatDate(user.createdAt)}
+            </p>
+
+            <p>
+                <strong>Updated At:</strong>
+                ${formatDate(user.updatedAt)}
+            </p>
+
+        </div>
+
+    `;
+
+                }
+
+
+                await loadPasskeys();
+
+            } catch (error) {
+
+                localStorage.removeItem(
+                    "token"
+                );
+
+
+                showLoggedOutUI();
+
+            }
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Load Passkeys
+        |--------------------------------------------------------------------------
+        */
+
+        async function loadPasskeys() {
+
+            try {
+
+                const result =
+                    await apiRequest(
+                        "/api/passkeys"
+                    );
+
+
+                const container =
+                    document
+                        .getElementById(
+                            "passkeyList"
+                        );
+
+
+                if (
+                    !result.passkeys ||
+                    result.passkeys.length === 0
+                ) {
+
+                    container.innerHTML =
+                        "<p>No passkeys registered.</p>";
+
+                    return;
+
+                }
+
+
+                container.innerHTML =
+                    "";
+
+
+                result.passkeys
+                    .forEach(
+                        passkey => {
+
+                            const div =
+                                document.createElement(
+                                    "div"
+                                );
+
+
+                            div.style.marginBottom =
+                                "10px";
+
+
+                            div.style.padding =
+                                "10px";
+
+
+                            div.style.border =
+                                "1px solid #ddd";
+
+
+                            div.innerHTML = `
+
+                            <strong>Passkey</strong>
+                            <br>
+
+                            Created:
+                            ${new Date(
+                                passkey.createdAt
+                            ).toLocaleString()}
+
+                            <br>
+
+                            <button
+                                class="danger"
+                                data-passkey-id="${escapeHtml(
+                                passkey.id
+                            )}"
+                            >
+                                Delete
+                            </button>
+
+                        `;
+
+
+                            div
+                                .querySelector(
+                                    "button"
+                                )
+                                .addEventListener(
+                                    "click",
+                                    () =>
+                                        deletePasskey(
+                                            passkey.id
+                                        )
+                                );
+
+
+                            container.appendChild(
+                                div
+                            );
+
+                        }
+                    );
+
+            } catch (error) {
+
+                console.error(
+                    error
+                );
+
+            }
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete Passkey
+        |--------------------------------------------------------------------------
+        */
+
+        async function deletePasskey(
+            passkeyId
+        ) {
+
+            if (
+                !confirm(
+                    "Delete this passkey?"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const result =
+                    await apiRequest(
+                        `/api/passkeys/${encodeURIComponent(
+                            passkeyId
+                        )}`,
+                        {
+                            method:
+                                "DELETE"
+                        }
+                    );
+
+
+                showMessage(
+                    result.message
+                );
+
+
+                await loadPasskeys();
+
+            } catch (error) {
+
+                showMessage(
+                    error.message,
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Get Passkeys Button
+        |--------------------------------------------------------------------------
+        */
+
+        document
+            .getElementById(
+                "getPasskeysButton"
+            )
+            .addEventListener(
+                "click",
+                loadPasskeys
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Logout
+        |--------------------------------------------------------------------------
+        */
+
+        document
+            .getElementById(
+                "logoutButton"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    try {
+
+                        await apiRequest(
+                            "/api/logout",
+                            {
+                                method:
+                                    "POST"
+                            }
+                        );
+
+                    } catch {
+
+                        /*
+                        | Even if the server request fails,
+                        | remove the local JWT.
+                        */
+
+                    }
+
+
+                    localStorage.removeItem(
+                        "token"
+                    );
+
+
+                    showLoggedOutUI();
+
+
+                    showMessage(
+                        "Logged out successfully"
+                    );
+
+                }
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create Product
+        |--------------------------------------------------------------------------
+        */
+
+        document
+            .getElementById(
+                "createProductButton"
+            )
+            .addEventListener(
+                "click",
+                async () => {
+
+                    try {
+
+                        const name =
+                            document
+                                .getElementById(
+                                    "productName"
+                                )
+                                .value
+                                .trim();
+
+
+                        const price =
+                            document
+                                .getElementById(
+                                    "productPrice"
+                                )
+                                .value;
+
+
+                        const result =
+                            await apiRequest(
+                                "/api/products",
+                                {
+
+                                    method:
+                                        "POST",
+
+                                    body:
+                                        JSON.stringify({
+
+                                            name,
+
+                                            price:
+                                                Number(price)
+
+                                        })
+
+                                }
+                            );
+
+
+                        showMessage(
+                            result.message
+                        );
+
+
+                        document
+                            .getElementById(
+                                "productName"
+                            )
+                            .value =
+                            "";
+
+
+                        document
+                            .getElementById(
+                                "productPrice"
+                            )
+                            .value =
+                            "";
+
+
+                        await loadProducts();
+
+                    } catch (error) {
+
+                        showMessage(
+                            error.message,
+                            "error"
+                        );
+
+                    }
+
+                }
+            );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Load Products
+        |--------------------------------------------------------------------------
+        */
+
+        async function loadProducts() {
+
+            try {
+
+                const result =
+                    await apiRequest(
+                        "/api/products"
+                    );
+
+
+                const container =
+                    document
+                        .getElementById(
+                            "productsOutput"
+                        );
+
+
+                if (
+                    !result.products ||
+                    result.products.length === 0
+                ) {
+
+                    container.innerHTML =
+                        "<p>No products found.</p>";
+
+                    return;
+
+                }
+
+
+                let html = `
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Created</th>
+                            <th>Updated</th>
+                            <th>Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+            `;
+
+
+                result.products
+                    .forEach(
+                        product => {
+
+                            html += `
+
+                            <tr>
+
+                                <td>
+                                    ${product.id}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                product.name
+                            )}
+                                </td>
+
+                                <td>
+                                    ${product.price}
+                                </td>
+
+                                <td>
+                                    ${formatDate(
+                                product.createdAt
+                            )}
+                                </td>
+
+                                <td>
+                                    ${formatDate(
+                                product.updatedAt
+                            )}
+                                </td>
+
+                                <td>
+
+                                    <button
+                                        class="danger"
+                                        onclick="deleteProduct(
+                                            ${product.id}
+                                        )"
+                                    >
+                                        Delete
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                        }
+                    );
+
+
+                html += `
+
+                    </tbody>
+
+                </table>
+
+            `;
+
+
+                container.innerHTML =
+                    html;
+
+            } catch (error) {
+
+                /*
+                | Super Admin cannot use /api/products.
+                */
+
+                document
+                    .getElementById(
+                        "productsOutput"
+                    )
+                    .innerHTML =
+                    `<p>${escapeHtml(
+                        error.message
+                    )}</p>`;
+
+            }
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Delete Product
+        |--------------------------------------------------------------------------
+        */
+
+        window.deleteProduct =
+            async function (
+                productId
+            ) {
+
+                if (
+                    !confirm(
+                        "Delete this product?"
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                try {
+
+                    const result =
+                        await apiRequest(
+                            `/api/products/${productId}`,
+                            {
+                                method:
+                                    "DELETE"
+                            }
+                        );
+
+
+                    showMessage(
+                        result.message
+                    );
+
+
+                    await loadProducts();
+
+                } catch (error) {
+
+                    showMessage(
+                        error.message,
+                        "error"
+                    );
+
+                }
+
+            };
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Utilities
+        |--------------------------------------------------------------------------
+        */
+
+        function escapeHtml(
+            value
+        ) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        function formatDate(
+            value
+        ) {
+
+            if (!value) {
+
+                return "-";
+
+            }
+
+
+            return new Date(
+                value
+            ).toLocaleString();
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Initial Application Load
+        |--------------------------------------------------------------------------
+        */
+
+        if (getToken()) {
+
+            await loadCurrentUser();
+
+            await loadProducts();
+
+        } else {
+
+            showLoggedOutUI();
+
+        }
+
+    </script>
+
+</body>
+
+</html>
